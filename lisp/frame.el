@@ -1604,6 +1604,24 @@ To get the frame's current background color, use `frame-parameters'."
 				     (assq 'foreground-color
 					   (frame-parameters))))))
 
+(defun set-titlebar-color (color-name)
+  "Set the titlebar color of the selected frame to COLOR-NAME.
+When called interactively, prompt for the name of the color to use.
+To get the frame's current background color, use `frame-parameters'."
+  (interactive (list (read-color "Titlebar color: ")))
+  (modify-frame-parameters (selected-frame)
+			   (list (cons 'background-color color-name)))
+  (or window-system
+      (face-set-after-frame-default (selected-frame)
+				    (list
+				     (cons 'background-color color-name)
+				     ;; Pass the foreground-color as
+				     ;; well, if defined, to avoid
+				     ;; losing it when faces are reset
+				     ;; to their defaults.
+				     (assq 'foreground-color
+					   (frame-parameters))))))
+
 (defun set-foreground-color (color-name)
   "Set the foreground color of the selected frame to COLOR-NAME.
 When called interactively, prompt for the name of the color to use.

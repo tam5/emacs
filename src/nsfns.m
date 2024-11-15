@@ -346,6 +346,47 @@ ns_set_background_color (struct frame *f, Lisp_Object arg, Lisp_Object oldval)
 
 
 static void
+ns_set_titlebar_color (struct frame *f, Lisp_Object arg, Lisp_Object oldval)
+{
+  NSColor *col;
+  NSView *view = FRAME_NS_VIEW (f);
+  EmacsCGFloat alpha;
+
+  block_input ();
+  if (ns_lisp_to_color (arg, &col))
+    {
+      store_frame_param (f, Qbackground_color, oldval);
+      unblock_input ();
+      error ("Unknown color");
+    }
+
+  [col retain];
+  [f->output_data.ns->background_color release];
+  f->output_data.ns->background_color = col;
+
+  FRAME_BACKGROUND_PIXEL (f) = [col unsignedLong];
+  alpha = [col alphaComponent];
+
+  if (view != nil)
+    {
+      [[view window] setBackgroundColor: col];
+
+      if (alpha != (EmacsCGFloat) 1.0)
+          [[view window] setOpaque: NO];
+      else
+          [[view window] setOpaque: YES];
+
+      if (FRAME_VISIBLE_P (f))
+        {
+          SET_FRAME_GARBAGED (f);
+          ns_clear_frame (f);
+        }
+    }
+  unblock_input ();
+}
+
+
+static void
 ns_set_cursor_color (struct frame *f, Lisp_Object arg, Lisp_Object oldval)
 {
   NSColor *col;
@@ -1064,6 +1105,7 @@ frame_parm_handler ns_frame_parm_handlers[] =
   gui_set_autoraise, /* generic OK */
   gui_set_autolower, /* generic OK */
   ns_set_background_color,
+  ns_set_titlebar_color,
   0, /* x_set_border_color,  may be impossible under Nextstep */
   0, /* x_set_border_width,  may be impossible under Nextstep */
   ns_set_cursor_color,
