@@ -332,7 +332,7 @@ ns_set_background_color (struct frame *f, Lisp_Object arg, Lisp_Object oldval)
           face->background = [[col colorWithAlphaComponent: alpha]
                                unsignedLong];
 
-          update_face_from_frame_parameter (f, Qbackground_color, arg);
+          // update_face_from_frame_parameter (f, Qbackground_color, arg);
         }
 
       if (FRAME_VISIBLE_P (f))
