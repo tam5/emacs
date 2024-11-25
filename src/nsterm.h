@@ -1229,6 +1229,8 @@ extern void ns_set_undecorated (struct frame *f, Lisp_Object new_value,
                                 Lisp_Object old_value);
 extern void ns_set_undecorated_round (struct frame *f, Lisp_Object new_value,
                                       Lisp_Object old_value);
+extern void ns_set_has_shadow (struct frame *f, Lisp_Object new_value,
+                                      Lisp_Object old_value);
 extern void ns_set_parent_frame (struct frame *f, Lisp_Object new_value,
                                  Lisp_Object old_value);
 extern void ns_set_no_focus_on_map (struct frame *f, Lisp_Object new_value,

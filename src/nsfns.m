@@ -1012,6 +1012,28 @@ ns_icon (struct frame *f, Lisp_Object parms)
     error ("Both left and top icon corners of icon must be specified");
 }
 
+void
+ns_set_has_shadow (struct frame *f, Lisp_Object new_value, Lisp_Object old_value)
+/* --------------------------------------------------------------------------
+     Set frame F's `has-shadow' parameter. If non-nil, F's window-system
+     window is drawn with a shadow. If nil, the window has no shadow.
+   -------------------------------------------------------------------------- */
+{
+  NSTRACE ("ns_set_has_shadow");
+
+  if (!EQ (new_value, old_value))
+    {
+      block_input ();
+
+      FRAME_HAS_SHADOW (f) = !NILP (new_value);
+
+      if (FRAME_NS_VIEW (f))
+        [(EmacsWindow *)[FRAME_NS_VIEW (f) window] setHasShadow: FRAME_HAS_SHADOW (f)];
+
+      unblock_input ();
+    }
+}
+
 
 /* Note: see frame.c for template, also where generic functions are
    implemented.  */
@@ -1059,6 +1081,7 @@ frame_parm_handler ns_frame_parm_handlers[] =
   0, /* x_set_inhibit_double_buffering */
   ns_set_undecorated,
   ns_set_undecorated_round,
+  ns_set_has_shadow,
   ns_set_parent_frame,
   0, /* x_set_skip_taskbar */
   ns_set_no_focus_on_map,
@@ -1390,6 +1413,12 @@ DEFUN ("x-create-frame", Fx_create_frame, Sx_create_frame,
                              RES_TYPE_BOOLEAN);
   FRAME_UNDECORATED_ROUND (f) = !NILP (tem) && !EQ (tem, Qunbound);
   store_frame_param (f, Qundecorated_round, FRAME_UNDECORATED_ROUND (f) ? Qt : Qnil);
+
+  tem = gui_display_get_arg (dpyinfo, parms, Qhas_shadow, NULL, NULL,
+                             RES_TYPE_BOOLEAN);
+  FRAME_HAS_SHADOW (f) = !NILP (tem) && !EQ (tem, Qunbound);
+  store_frame_param (f, Qhas_shadow, FRAME_HAS_SHADOW (f) ? Qt : Qnil);
+
 
 #ifdef NS_IMPL_COCOA
 #ifndef NSAppKitVersionNumber10_14

@@ -400,6 +400,9 @@ struct frame
   /* True if this is an undecorated frame with round corners.  */
   bool_bf undecorated_round : 1;
 
+  /* True if this is frame should have a shadow.  */
+  bool_bf has_shadow : 1;
+
 #ifndef HAVE_NTGUI
   /* True if this is an override_redirect frame.  */
   bool_bf override_redirect : 1;
@@ -1084,6 +1087,7 @@ default_pixels_per_inch_y (void)
 #if defined (HAVE_WINDOW_SYSTEM)
 #define FRAME_UNDECORATED(f) ((f)->undecorated)
 #define FRAME_UNDECORATED_ROUND(f) ((f)->undecorated_round)
+#define FRAME_HAS_SHADOW(f) ((f)->has_shadow)
 #ifdef HAVE_NTGUI
 #define FRAME_OVERRIDE_REDIRECT(f) ((void) (f), 0)
 #else
@@ -1111,6 +1115,7 @@ default_pixels_per_inch_y (void)
 #else /* not HAVE_WINDOW_SYSTEM */
 #define FRAME_UNDECORATED(f) ((void) (f), 0)
 #define FRAME_UNDECORATED_ROUND(f) ((void) (f), 0)
+#define FRAME_HAS_SHADOW(f) ((void) (f), 1)
 #define FRAME_OVERRIDE_REDIRECT(f) ((void) (f), 0)
 #define FRAME_PARENT_FRAME(f) ((void) (f), NULL)
 #define FRAME_SKIP_TASKBAR(f) ((void) (f), 0)
