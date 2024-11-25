@@ -1057,6 +1057,29 @@ ns_icon (struct frame *f, Lisp_Object parms)
 }
 
 
+void
+ns_set_has_shadow (struct frame *f, Lisp_Object new_value, Lisp_Object old_value)
+/* --------------------------------------------------------------------------
+     Set frame F's `has-shadow' parameter. If non-nil, F's window-system
+     window is drawn with a shadow. If nil, the window has no shadow.
+   -------------------------------------------------------------------------- */
+{
+  NSTRACE ("ns_set_has_shadow");
+
+  if (!EQ (new_value, old_value))
+    {
+      block_input ();
+
+      FRAME_HAS_SHADOW (f) = !NILP (new_value);
+
+      if (FRAME_NS_VIEW (f))
+        [(EmacsWindow *)[FRAME_NS_VIEW (f) window] setHasShadow: FRAME_HAS_SHADOW (f)];
+
+      unblock_input ();
+    }
+}
+
+
 /* Note: see frame.c for template, also where generic functions are
    implemented.  */
 frame_parm_handler ns_frame_parm_handlers[] =
@@ -1103,6 +1126,7 @@ frame_parm_handler ns_frame_parm_handlers[] =
   ns_set_inhibit_double_buffering,
   ns_set_undecorated,
   ns_set_parent_frame,
+  ns_set_has_shadow,
   0, /* x_set_skip_taskbar */
   ns_set_no_focus_on_map,
   ns_set_no_accept_focus,
@@ -1404,6 +1428,11 @@ DEFUN ("x-create-frame", Fx_create_frame, Sx_create_frame,
                              RES_TYPE_BOOLEAN);
   FRAME_UNDECORATED (f) = !NILP (tem) && !EQ (tem, Qunbound);
   store_frame_param (f, Qundecorated, FRAME_UNDECORATED (f) ? Qt : Qnil);
+
+  tem = gui_display_get_arg (dpyinfo, parms, Qhas_shadow, NULL, NULL,
+                             RES_TYPE_BOOLEAN);
+  FRAME_HAS_SHADOW (f) = !NILP (tem) && !EQ (tem, Qunbound);
+  store_frame_param (f, Qhas_shadow, FRAME_HAS_SHADOW (f) ? Qt : Qnil);
 
 #ifdef NS_IMPL_COCOA
   tem = gui_display_get_arg (dpyinfo, parms, Qns_appearance, NULL, NULL,
